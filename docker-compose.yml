@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  web:
+    image: nginx:alpine
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+  
+  tor:
+    image: alpine:latest
+    command: >
+      sh -c "apk add --no-cache tor &&
+      mkdir -p /var/lib/tor/hidden_service &&
+      chmod 700 /var/lib/tor/hidden_service &&
+      tor -f /etc/tor/torrc"
+    volumes:
+      - ./tor-config/torrc:/etc/tor/torrc:ro
+      - tor-data:/var/lib/tor/hidden_service/
+    depends_on:
+      - web
+
+volumes:
+  tor-data:
